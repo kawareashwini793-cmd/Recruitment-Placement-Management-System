@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applications Management</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 30px;
+        }
+
+        h1 {
+            color: #243b55;
+            text-align: center;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 13px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #243b55;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        .status {
+            font-weight: bold;
+            color: #16803c;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 15px;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Applications Management</h1>
+
+    <div class="container">
+        <h2>Student Job Applications</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Application ID</th>
+                    <th>Candidate ID</th>
+                    <th>Job ID</th>
+                    <th>Application Date</th>
+                    <th>Application Status</th>
+                </tr>
+            </thead>
+
+            <tbody id="applicationsTable">
+                <tr>
+                    <td colspan="5">Loading applications...</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p id="message"></p>
+    </div>
+
+    <script>
+        async function loadApplications() {
+            const table = document.getElementById("applicationsTable");
+            const message = document.getElementById("message");
+
+            try {
+                const response = await fetch("/api/applications");
+
+                if (!response.ok) {
+                    throw new Error("Unable to fetch applications");
+                }
+
+                const applications = await response.json();
+
+                table.innerHTML = "";
+
+                if (applications.length === 0) {
+                    table.innerHTML =
+                        '<tr><td colspan="5">No applications found.</td></tr>';
+                    return;
+                }
+
+                applications.forEach(app => {
+                    const row = document.createElement("tr");
+
+                    const values = [
+                        app.application_id,
+                        app.candidate_id,
+                        app.job_id,
+                        app.application_date
+                            ? new Date(app.application_date).toLocaleString()
+                            : "",
+                        app.application_status
+                    ];
+
+                    values.forEach((value, index) => {
+                        const cell = document.createElement("td");
+                        cell.textContent = value ?? "";
+
+                        if (index === 4) {
+                            cell.className = "status";
+                        }
+
+                        row.appendChild(cell);
+                    });
+
+                    table.appendChild(row);
+                });
+
+            } catch (error) {
+                table.innerHTML =
+                    '<tr><td colspan="5">Error loading applications.</td></tr>';
+
+                message.textContent = error.message;
+            }
+        }
+
+        loadApplications();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students Management - RPMS</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .students-container {
+            padding: 30px;
+        }
+        .students-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            color: #222;
+        }
+        .students-table th, .students-table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        .students-table th {
+            background: #172554;
+            color: white;
+        }
+        .students-table tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+        .status {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="students-container">
+        <h1>Students Management</h1>
+        <p>All registered students</p>
+        <a href="/dashboard.html">Back to Dashboard</a>
+
+        <p id="status" class="status">Loading students...</p>
+
+        <div style="overflow-x:auto;">
+            <table class="students-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Qualification</th>
+                        <th>Passing Year</th>
+                        <th>Percentage</th>
+                        <th>Backlogs</th>
+                    </tr>
+                </thead>
+                <tbody id="studentsTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function loadStudents() {
+            const status = document.getElementById("status");
+            const table = document.getElementById("studentsTable");
+
+            try {
+                const response = await fetch("/api/students");
+
+                if (!response.ok) {
+                    throw new Error("Unable to load students");
+                }
+
+                const students = await response.json();
+                table.innerHTML = "";
+
+                if (students.length === 0) {
+                    status.textContent = "No students found.";
+                    return;
+                }
+
+                students.forEach(student => {
+                    const row = document.createElement("tr");
+
+                    [
+                        student.candidate_id,
+                        student.full_name,
+                        student.email,
+                        student.phone,
+                        student.qualification,
+                        student.passing_year,
+                        student.percentage ?? "-",
+                        student.backlogs ?? "-"
+                    ].forEach(value => {
+                        const cell = document.createElement("td");
+                        cell.textContent = value ?? "-";
+                        row.appendChild(cell);
+                    });
+
+                    table.appendChild(row);
+                });
+
+                status.textContent = "Total Students: " + students.length;
+            } catch (error) {
+                status.textContent = "Error loading students. Please try again.";
+            }
+        }
+
+        loadStudents();
+    </script>
+</body>
+</html>

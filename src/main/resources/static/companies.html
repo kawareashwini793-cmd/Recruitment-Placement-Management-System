@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Companies Management</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f6f9;color:#222}
+nav{background:#202b3c;padding:16px;display:flex;gap:18px;flex-wrap:wrap}
+nav a{color:white;text-decoration:none}
+.container{padding:25px}
+h1{color:#202b3c}
+table{width:100%;border-collapse:collapse;background:white;margin-top:20px}
+th,td{padding:13px;border:1px solid #ddd;text-align:left}
+th{background:#263b5a;color:white}
+.error{color:red}
+</style>
+</head>
+<body>
+<nav>
+<a href="dashboard.html">Dashboard</a>
+<a href="students.html">Students</a>
+<a href="companies.html">Companies</a>
+<a href="jobs.html">Jobs</a>
+<a href="applications.html">Applications</a>
+<a href="interviews.html">Interviews</a>
+<a href="offers.html">Offers</a>
+<a href="placements.html">Placements</a>
+<a href="reports.html">Reports</a>
+<a href="index.html">Logout</a>
+</nav>
+<div class="container">
+<h1>Companies Management</h1>
+<p>Registered Companies</p>
+<table>
+<thead>
+<tr>
+<th>ID</th><th>Company Name</th><th>Location</th>
+<th>Website</th><th>Contact Email</th>
+</tr>
+</thead>
+<tbody id="companyData">
+<tr><td colspan="5">Loading...</td></tr>
+</tbody>
+</table>
+<p id="message"></p>
+</div>
+<script>
+fetch('/api/companies')
+.then(response=>{
+if(!response.ok) throw new Error('Unable to load companies');
+return response.json();
+})
+.then(companies=>{
+const tbody=document.getElementById('companyData');
+tbody.innerHTML='';
+if(!companies.length){
+tbody.innerHTML='<tr><td colspan="5">No companies found</td></tr>';
+return;
+}
+companies.forEach(c=>{
+const row=document.createElement('tr');
+[c.company_id,c.company_name,c.location,c.website,c.contact_email]
+.forEach(value=>{
+const td=document.createElement('td');
+td.textContent=value ?? '';
+row.appendChild(td);
+});
+tbody.appendChild(row);
+});
+})
+.catch(error=>{
+document.getElementById('companyData').innerHTML=
+'<tr><td colspan="5">Unable to load company data</td></tr>';
+document.getElementById('message').textContent=error.message;
+});
+</script>
+</body>
+</html>

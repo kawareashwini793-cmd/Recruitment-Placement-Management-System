@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPMS Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef1f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .login-box {
+            background: white;
+            padding: 35px;
+            width: 320px;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px #0002;
+        }
+        h2 { text-align: center; color: #263b80; }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #263b80;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #message {
+            margin-top: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>RPMS Login</h2>
+
+        <form id="loginForm">
+            <input type="text" id="username"
+                   placeholder="Username" required>
+
+            <input type="password" id="password"
+                   placeholder="Password" required>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <p id="message"></p>
+    </div>
+
+    <script>
+        document.getElementById('loginForm')
+            .addEventListener('submit', async function(event) {
+                event.preventDefault();
+
+                const message = document.getElementById('message');
+                message.textContent = 'Checking login...';
+
+                try {
+                    const response = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: document.getElementById('username').value,
+                            password: document.getElementById('password').value
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Invalid login');
+                    }
+
+                    message.style.color = 'green';
+                    message.textContent = 'Login successful!';
+
+                    sessionStorage.setItem('rpmsUser', JSON.stringify(data));
+
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';
+                    }, 700);
+
+                } catch (error) {
+                    message.style.color = 'red';
+                    message.textContent = error.message;
+                }
+            });
+    </script>
+</body>
+</html>

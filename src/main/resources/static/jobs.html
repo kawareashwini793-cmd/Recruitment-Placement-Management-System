@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jobs Management</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 30px;
+        }
+
+        h1 {
+            color: #243b55;
+            text-align: center;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #243b55;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Jobs Management</h1>
+
+    <div class="container">
+        <h2>Available Jobs</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Job ID</th>
+                    <th>Company ID</th>
+                    <th>Job Title</th>
+                    <th>Description</th>
+                    <th>Minimum Percentage</th>
+                    <th>Passing Year</th>
+                </tr>
+            </thead>
+
+            <tbody id="jobsTable">
+                <tr>
+                    <td colspan="6">Loading jobs...</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="message" id="message"></p>
+    </div>
+
+    <script>
+        async function loadJobs() {
+            const table = document.getElementById("jobsTable");
+            const message = document.getElementById("message");
+
+            try {
+                const response = await fetch("/api/jobs");
+
+                if (!response.ok) {
+                    throw new Error("Unable to fetch jobs");
+                }
+
+                const jobs = await response.json();
+
+                table.innerHTML = "";
+
+                if (jobs.length === 0) {
+                    table.innerHTML =
+                        '<tr><td colspan="6">No jobs available.</td></tr>';
+                    return;
+                }
+
+                jobs.forEach(job => {
+                    const row = document.createElement("tr");
+
+                    [
+                        job.job_id,
+                        job.company_id,
+                        job.job_title,
+                        job.job_description,
+                        job.minimum_percentage + "%",
+                        job.passing_year
+                    ].forEach(value => {
+                        const cell = document.createElement("td");
+                        cell.textContent = value ?? "";
+                        row.appendChild(cell);
+                    });
+
+                    table.appendChild(row);
+                });
+
+            } catch (error) {
+                table.innerHTML =
+                    '<tr><td colspan="6">Error loading jobs.</td></tr>';
+
+                message.textContent = error.message;
+            }
+        }
+
+        loadJobs();
+    </script>
+
+</body>
+</html>

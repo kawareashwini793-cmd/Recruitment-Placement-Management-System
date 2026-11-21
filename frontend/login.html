@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - RPMS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .login-section {
+            min-height: 85vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        }
+
+        .login-box h2 {
+            text-align: center;
+            color: #101b3f;
+            margin-bottom: 10px;
+        }
+
+        .login-box p {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+
+        .login-box label {
+            display: block;
+            margin: 15px 0 8px;
+            font-weight: 600;
+        }
+
+        .login-box input, .login-box select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            outline: none;
+        }
+
+        .login-box input:focus, .login-box select:focus {
+            border-color: #3b82f6;
+        }
+
+        .login-box button {
+            width: 100%;
+            margin-top: 25px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .back-home {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #2457a6;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <h2>RPMS</h2>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="login.html">Login</a>
+            <a href="dashboard.html">Dashboard</a>
+        </nav>
+    </header>
+
+    <section class="login-section">
+        <div class="login-box">
+            <h2>Welcome Back!</h2>
+            <p>Login to your placement account</p>
+
+            <form action="dashboard.html">
+                <label>Email Address</label>
+                <input type="email" placeholder="Enter your email" required>
+
+                <label>Password</label>
+                <input type="password" placeholder="Enter your password" required>
+
+                <label>Login As</label>
+                <select required>
+                    <option value="">Select Role</option>
+                    <option>Admin</option>
+                    <option>Student</option>
+                    <option>Company</option>
+                </select>
+
+                <button type="submit" class="btn">Login</button>
+            </form>
+
+            <a href="index.html" class="back-home">Back to Home</a>
+        </div>
+    </section>
+
+</body>
+</html>

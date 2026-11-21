@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interviews Management</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 30px;
+        }
+
+        h1 {
+            color: #243b55;
+            text-align: center;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 13px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #243b55;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        .status {
+            font-weight: bold;
+            color: #16803c;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 15px;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Interviews Management</h1>
+
+    <div class="container">
+        <h2>Scheduled Interviews</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Interview ID</th>
+                    <th>Application ID</th>
+                    <th>Interview Round</th>
+                    <th>Interview Date</th>
+                    <th>Interview Status</th>
+                </tr>
+            </thead>
+
+            <tbody id="interviewsTable">
+                <tr>
+                    <td colspan="5">Loading interviews...</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p id="message"></p>
+    </div>
+
+    <script>
+        async function loadInterviews() {
+            const table = document.getElementById("interviewsTable");
+            const message = document.getElementById("message");
+
+            try {
+                const response = await fetch("/api/interviews");
+
+                if (!response.ok) {
+                    throw new Error("Unable to fetch interviews");
+                }
+
+                const interviews = await response.json();
+
+                table.innerHTML = "";
+
+                if (interviews.length === 0) {
+                    table.innerHTML =
+                        '<tr><td colspan="5">No interviews found.</td></tr>';
+                    return;
+                }
+
+                interviews.forEach(interview => {
+                    const row = document.createElement("tr");
+
+                    const values = [
+                        interview.interview_id,
+                        interview.application_id,
+                        interview.interview_round,
+                        interview.interview_date
+                            ? new Date(interview.interview_date).toLocaleString()
+                            : "",
+                        interview.interview_status
+                    ];
+
+                    values.forEach((value, index) => {
+                        const cell = document.createElement("td");
+                        cell.textContent = value ?? "";
+
+                        if (index === 4) {
+                            cell.className = "status";
+                        }
+
+                        row.appendChild(cell);
+                    });
+
+                    table.appendChild(row);
+                });
+
+            } catch (error) {
+                table.innerHTML =
+                    '<tr><td colspan="5">Error loading interviews.</td></tr>';
+
+                message.textContent = error.message;
+            }
+        }
+
+        loadInterviews();
+    </script>
+
+</body>
+</html>

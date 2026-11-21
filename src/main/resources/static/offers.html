@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offers Management</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 30px;
+        }
+
+        h1 {
+            color: #243b55;
+            text-align: center;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 13px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #243b55;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        .status {
+            font-weight: bold;
+            color: #16803c;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 15px;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Offers Management</h1>
+
+    <div class="container">
+        <h2>Candidate Job Offers</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Offer ID</th>
+                    <th>Application ID</th>
+                    <th>Offered Salary</th>
+                    <th>Offer Date</th>
+                    <th>Offer Status</th>
+                </tr>
+            </thead>
+
+            <tbody id="offersTable">
+                <tr>
+                    <td colspan="5">Loading offers...</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p id="message"></p>
+    </div>
+
+    <script>
+        async function loadOffers() {
+            const table = document.getElementById("offersTable");
+            const message = document.getElementById("message");
+
+            try {
+                const response = await fetch("/api/offers");
+
+                if (!response.ok) {
+                    throw new Error("Unable to fetch offers");
+                }
+
+                const offers = await response.json();
+
+                table.innerHTML = "";
+
+                if (offers.length === 0) {
+                    table.innerHTML =
+                        '<tr><td colspan="5">No offers found.</td></tr>';
+                    return;
+                }
+
+                offers.forEach(offer => {
+                    const row = document.createElement("tr");
+
+                    const values = [
+                        offer.offer_id,
+                        offer.application_id,
+                        offer.offered_salary,
+                        offer.offer_date
+                            ? new Date(offer.offer_date).toLocaleDateString()
+                            : "",
+                        offer.offer_status
+                    ];
+
+                    values.forEach((value, index) => {
+                        const cell = document.createElement("td");
+                        cell.textContent = value ?? "";
+
+                        if (index === 4) {
+                            cell.className = "status";
+                        }
+
+                        row.appendChild(cell);
+                    });
+
+                    table.appendChild(row);
+                });
+
+            } catch (error) {
+                table.innerHTML =
+                    '<tr><td colspan="5">Error loading offers.</td></tr>';
+
+                message.textContent = error.message;
+            }
+        }
+
+        loadOffers();
+    </script>
+
+</body>
+</html>
